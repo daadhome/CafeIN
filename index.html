@@ -1,0 +1,23 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<h2>Datos del Cliente</h2>
+<input type="text" id="nombre_empresa" placeholder="Nombre de la Empresa">
+<input type="email" id="contacto_email" placeholder="Email de Contacto">
+<input type="text" id="contacto_nombre" placeholder="Nombre de Contacto">
+
+<h2>Añadir Máquinas</h2>
+<select id="select_maquinas"></select>
+<input type="number" id="maquina_cantidad" value="1">
+<input type="number" id="maquina_precio" placeholder="Precio Ofertado">
+<button onclick="addMaquina()">Añadir Máquina</button>
+
+<h2>Añadir Items (Café/Consumibles)</h2>
+<select id="select_items"></select>
+<input type="number" id="item_cantidad" value="1">
+<input type="number" id="item_precio" placeholder="Precio Ofertado">
+<button onclick="addItem()">Añadir Item</button>
+
+<h2>Resumen de la Propuesta</h2>
+<div id="propuesta_resumen"></div>
+
+<button onclick="generarPropuesta()">Generar y Enviar Propuesta</button>
