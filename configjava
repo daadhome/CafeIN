@@ -1,0 +1,57 @@
+// Configuración de Supabase (usando claves 'anon' públicas)
+const SUPABASE_URL = 'https://base.daadhome.es';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJzZXJ2aWNlX3JvbGUiLAogICAgImlzcyI6ICJzdXBhYmFzZS1kZW1vIiwKICAgICJpYXQiOiAxNjQxNzY5MjAwLAogICAgImV4cCI6IDE3OTk1MzU2MDAKfQ.DaYlNEoUrrEn2Ig7tqibS-PHK5vgusbcbo7X36XVt4Q';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const N8N_WEBHOOK_URL = 'https://auto.daadhome.es/webhook-test/Propuesta-Incapto';
+
+// Arrays para guardar la selección
+let maquinasSeleccionadas =;
+let itemsSeleccionados =;
+
+// 1. Cargar datos al iniciar la página
+document.addEventListener('DOMContentLoaded', async () => {
+    // Cargar Máquinas
+    const { data: maquinas, error: errMaq } = await supabase.from('Maquinas').select('id, nombre, precio_base');
+    if (maquinas) {
+        const select = document.getElementById('select_maquinas');
+        maquinas.forEach(m => {
+            select.innerHTML += `<option value="${m.id}" data-precio="${m.precio_base}">${m.nombre}</option>`;
+        });
+    }
+    //... Cargar Cafe y Consumibles de forma similar en 'select_items'...
+});
+
+//... funciones addMaquina() y addItem() que añaden a los arrays...
+
+// 3. Función de envío
+async function generarPropuesta() {
+    // Construir el objeto JSON (debe coincidir con lo que espera el RPC)
+    const payload = {
+        cliente: {
+            nombre_empresa: document.getElementById('nombre_empresa').value,
+            contacto_email: document.getElementById('contacto_email').value,
+            contacto_nombre: document.getElementById('contacto_nombre').value
+        },
+        maquinas: maquinasSeleccionadas, // ej: [{ id: '...', cantidad: 1, precio_ofertado: 1200.00 }]
+        items: itemsSeleccionados, // ej: [{ id: '...', tipo_item: 'cafe', cantidad: 5, precio_ofertado: 25.50 }]
+        total: /*... calcular el total sumando los arrays... */
+    };
+
+    // Enviar a n8n
+    try {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+            alert('Propuesta generada y enviada con éxito!');
+        } else {
+            alert('Error al generar la propuesta.');
+        }
+    } catch (error) {
+        console.error('Error de red:', error);
+    }
+}
